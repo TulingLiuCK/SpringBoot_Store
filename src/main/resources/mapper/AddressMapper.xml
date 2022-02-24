@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lck.springboot_store.mapper.AddressMapper">
+    <!--自定义映射谷子额：resultMap标签来完成映射规则的定义-->
+    <resultMap id="AddressEntityMap" type="com.lck.springboot_store.entity.Address">
+        <id column="aid" property="aid"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="created_user" property="createdUser"></result>
+        <result column="create_time" property="createdTime"></result>
+        <result column="modified_user" property="modifiedUser"></result>
+        <result column="modified_time" property="modifiedTime"></result>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="aid">
+        insert into t_address(uid, name, province_name, province_code, city_name, city_code, area_name, area_code, zip,
+                              address, phone, tel, tag, is_default, created_user, created_time, modified_user,
+                              modified_time)
+        values (#{uid}, #{name}, #{provinceName}, #{provinceCode}, #{cityName}, #{cityCode}, #{areaName},
+                #{areaCode}, #{zip}, #{address}, #{phone}, #{tel}, #{tag}, #{isDefault}, #{createdUser},
+                #{createdTime}, #{modifiedUser}, #{modifiedTime})
+
+    </insert>
+    <update id="updateAddress">
+        update t_address
+        <set>
+            <if test="province_name != null">
+                province_name = #{provinceName},
+            </if>
+            <if test="province_code!=null">
+                province_code=#{provinceCode},
+            </if>
+            <if test="city_name!=null">
+                city_name=#{cityName},
+            </if>
+            <if test="city_code!=null">
+                city_code=#{cityCode},
+            </if>
+            <if test="area_name!=null">
+                area_name = #{areaName},
+            </if>
+            <if test=" area_code!=null">
+                area_code = #{areaCode},
+            </if>
+            <if test="zip!=null">
+                zip=#{zip},
+            </if>
+            <if test="address!=null">
+                address=#{address},
+            </if>
+            <if test="phone!=null">
+                phone=#{phone},
+            </if>
+            <if test="tel!=null">
+                tel=#{tel},
+            </if>
+            <if test="tag!=null">
+                tag=#{tag}
+            </if>
+        </set>
+        where aid = #{aid}
+    </update>
+
+
+    <select id="countByUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM t_address
+        WHERE uid = #{uid}
+    </select>
+    <select id="findByUid" resultType="com.lck.springboot_store.entity.Address">
+        select *
+        from t_address
+        where uid = #{uid}
+        order by is_default desc, created_time desc
+    </select>
+    <select id="findByAid" resultType="com.lck.springboot_store.entity.Address">
+        select *
+        from t_address
+        where aid = #{aid}
+    </select>
+
+    <update id="updateNonDefault">
+        update t_address
+        set is_default = 0
+        where uid = #{uid}
+    </update>
+    <update id="updateDefaultByAid">
+        update t_address
+        set is_default    = 1,
+            modified_user = #{modifiedUser},
+            modified_time=#{modifiedTime}
+        where aid = #{aid}
+    </update>
+
+
+    <delete id="deleteByAid">
+        delete
+        from t_address
+        where aid = #{aid}
+    </delete>
+    <select id="findLastModified" resultMap="AddressEntityMap">
+        select *
+        from t_address
+        where uid = #{uid}
+        order by modified_time desc limit 0,1
+    </select>
+
+</mapper>
